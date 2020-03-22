@@ -1,15 +1,25 @@
 "use strict";
-const select = document.getElementById("select");
 
+//fetching data from api and handle the errors if any
 function fetchJSON(url, cb) {
   fetch(url)
-    .then(res => res.json())
-    .then(data => cb(null, data))
-    .catch(err =>
-      cb(new Error(`Network error: ${err.status} - ${err.statusText}`))
-    );
+    .then(res => {
+      //if the request is not successful then throw an error
+      console.log(res);
+      if (!res.ok) {
+        throw Error(`Network error: ${res.status} - ${res.statusText}`);
+      }
+      return res.json(); //parse the response data into json
+    })
+    .then(data => cb(null, data)) //in case of successful request, fire callback function with the data
+    .catch(err => {
+      //append the error to the page via using callback function provided in main function
+      console.log(err);
+      cb(err, null);
+    });
 }
 
+//function to create elements and append them to desired sections
 function createAndAppend(name, parent, options = {}) {
   const elem = document.createElement(name);
   parent.appendChild(elem);
@@ -22,10 +32,13 @@ function createAndAppend(name, parent, options = {}) {
   });
   return elem;
 }
-const sectionRepo = document.querySelector(".repo-container");
-const ul = createAndAppend("ul", sectionRepo);
 
+const sectionRepo = document.querySelector(".repo-container"); //access to the repo section
+
+//rendering the repo data to show repo section
 function renderRepoDetails(repo) {
+  const ul = createAndAppend("ul", sectionRepo);
+
   ul.innerHTML = "";
   //creating li item for repository name
   const repoLi = createAndAppend("li", ul, {
@@ -52,15 +65,15 @@ function renderRepoDetails(repo) {
   });
 }
 
-const sectionContributers = document.querySelector(".contributors-container");
-const ulCont = createAndAppend("ul", sectionContributers, {
-  class: "ulCont"
-});
+const sectionContributers = document.querySelector(".contributors-container"); //access to the contributors section
 
-
-function renderRepoContributers(repo) {
+//rendering the data to show the contributors section
+function renderRepoContributors(repo) {
+  const ulCont = createAndAppend("ul", sectionContributers, {
+    class: "ulCont"
+  });
   ulCont.innerHTML = "";
-  const headerContributers = createAndAppend('li', ulCont, {
+  const headerContributers = createAndAppend("li", ulCont, {
     text: "Contributions",
     class: "headerContributers"
   });
@@ -87,11 +100,16 @@ function renderRepoContributers(repo) {
     })
     .catch(err => console.log(err));
 }
+
 // to make time more 'readible'
 function convertTime(time) {
   const dateTime = new Date(time);
   return dateTime.toLocaleString();
 }
+
+// adding repo names to the select element as options
+// and rendering the repo and contributors sections
+const select = document.getElementById("select"); //get access to select element
 
 function createSelection(repos) {
   repos.sort((repoA, repoB) => {
@@ -104,25 +122,29 @@ function createSelection(repos) {
     select.appendChild(option);
   });
   select.addEventListener("change", () => {
+    //rendering the containers' data when the selected option(repo) has been changed
     renderRepoDetails(repos[select.value]);
-    renderRepoContributers(repos[select.value]);
+    renderRepoContributors(repos[select.value]);
   });
-  renderRepoDetails(repos[0]);
-  renderRepoContributers(repos[0]);
+  renderRepoDetails(repos[0]); //rendering the first repo as default
+  renderRepoContributors(repos[0]); //rendering first repo's contributors as default
 }
 
+const mainContainer = document.querySelector(".main-container"); //get access to the main container
+//main function with provided callback function
 function main(url) {
   fetchJSON(url, (err, repos) => {
     if (err) {
+      //appending the error to the page, if there is any
       createAndAppend("div", root, {
         text: err.message,
         class: "alert-error"
       });
       return;
     }
-    createSelection(repos);
+    createSelection(repos); //if there is no error fire this function
   });
 }
 const HYF_REPOS_URL =
   "https://api.github.com/orgs/HackYourFuture/repos?per_page=100";
-window.onload = () => main(HYF_REPOS_URL);
+window.onload = () => main(HYF_REPOS_URL); //attaching the main function to onload event listener
