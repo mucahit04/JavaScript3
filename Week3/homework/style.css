@@ -100,37 +100,30 @@ ul {
     margin: 0;
     padding: 0;
   }
-
   .main-container {
     display: block;
     width: 100%;
     font-size: 1.2em;
   }
-
   .contributors-container {
     width: 90%;
     margin: auto;
   }
-
   .liCont div {
     width: 5%;
     border-radius: 8%;
   }
-
   .liCont img {
     width: 8%;
   }
-
   .repo-container {
     width: 90%;
     margin: auto;
     margin-bottom: 3%;
   }
-
   .header {
     display: flex;
   }
-
   #select {
     color: black;
     border: 1px solid white;
@@ -144,39 +137,32 @@ ul {
     margin: 0;
     padding: 0;
   }
-
   .main-container {
     display: block;
     width: 100%;
     font-size: 1.2em;
   }
-
   .contributors-container {
     width: 90%;
     margin: auto;
   }
-
   .liCont div {
     width: 5%;
     border-radius: 8%;
   }
-
   .liCont img {
     width: 10%;
   }
-
   .repo-container {
     width: 90%;
     margin: auto;
     margin-bottom: 3%;
   }
-
   .header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2%;
   }
-
   #select {
     color: black;
     border: 1px solid white;

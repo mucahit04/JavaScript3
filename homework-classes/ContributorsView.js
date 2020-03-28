@@ -1,7 +1,9 @@
 'use strict';
 
 {
-  const { createAndAppend } = window.Util;
+  const {
+    createAndAppend
+  } = window.Util;
 
   class ContributorsView {
     constructor(container) {
@@ -21,6 +23,35 @@
     render(contributors) {
       // TODO: replace this comment and the console.log with your own code
       console.log('ContributorsView', contributors);
+
+      this.container.innerHTML = '';
+      const ulCont = createAndAppend('ul', this.container);
+      createContributorSection(contributors)
+      //create the contributors section
+      function createContributorSection(contributors) {
+        ulCont.innerHTML = '';
+        createAndAppend('li', ulCont, {
+          text: 'Contributions',
+          class: 'headercontributors',
+        });
+        contributors.forEach(contributor => {
+          const li = createAndAppend('li', ulCont, {
+            class: 'liCont',
+          });
+          createAndAppend('img', li, {
+            src: contributor.avatar_url,
+          });
+          createAndAppend('a', li, {
+            text: contributor.login,
+            href: contributor.html_url,
+            target: '_blank',
+          });
+          createAndAppend('div', li, {
+            text: contributor.contributions,
+          });
+        });
+      }
+
     }
   }
 
