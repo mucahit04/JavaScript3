@@ -34,10 +34,10 @@ function createAndAppend(name, parent, options = {}) {
 }
 
 const sectionRepo = document.querySelector(".repo-container"); //access to the repo section
+const ulRepo = createAndAppend("ul", sectionRepo);
 
 //rendering the repo data to show repo section
-function renderRepoDetails(repo) {
-  const ul = createAndAppend("ul", sectionRepo);
+function renderRepoDetails(repo, ul) {
 
   ul.innerHTML = "";
   //creating li item for repository name
@@ -66,14 +66,14 @@ function renderRepoDetails(repo) {
 }
 
 const sectionContributers = document.querySelector(".contributors-container"); //access to the contributors section
-
+const ulCont = createAndAppend("ul", sectionContributers, {
+  class: "ulCont"
+});
 //rendering the data to show the contributors section
-function renderRepoContributors(repo) {
-  const ulCont = createAndAppend("ul", sectionContributers, {
-    class: "ulCont"
-  });
+function renderRepoContributors(repo, ul) {
+
   ulCont.innerHTML = "";
-  const headerContributers = createAndAppend("li", ulCont, {
+  createAndAppend("li", ul, {
     text: "Contributions",
     class: "headerContributers"
   });
@@ -82,18 +82,18 @@ function renderRepoContributors(repo) {
     .then(res => res.json())
     .then(data => {
       data.forEach(contributer => {
-        const li = createAndAppend("li", ulCont, {
+        const li = createAndAppend("li", ul, {
           class: "liCont"
         });
-        const img = createAndAppend("img", li, {
+        createAndAppend("img", li, {
           src: contributer.avatar_url
         });
-        const login = createAndAppend("a", li, {
+        createAndAppend("a", li, {
           text: contributer.login,
           href: contributer.html_url,
           target: "_blank"
         });
-        const div = createAndAppend("div", li, {
+        createAndAppend("div", li, {
           text: contributer.contributions
         });
       });
@@ -123,11 +123,11 @@ function createSelection(repos) {
   });
   select.addEventListener("change", () => {
     //rendering the containers' data when the selected option(repo) has been changed
-    renderRepoDetails(repos[select.value]);
-    renderRepoContributors(repos[select.value]);
+    renderRepoDetails(repos[select.value], ulRepo);
+    renderRepoContributors(repos[select.value], ulCont);
   });
-  renderRepoDetails(repos[0]); //rendering the first repo as default
-  renderRepoContributors(repos[0]); //rendering first repo's contributors as default
+  renderRepoDetails(repos[0], ulRepo); //rendering the first repo as default
+  renderRepoContributors(repos[0], ulCont); //rendering first repo's contributors as default
 }
 
 const mainContainer = document.querySelector(".main-container"); //get access to the main container
