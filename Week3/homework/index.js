@@ -1,16 +1,42 @@
 'use strict';
 
-//getting data from api and handle the errors if any
-async function fetchJSON(url, cb) {
+const sectionRepo = document.querySelector('.repo-container');
+const ulRepo = createAndAppend('ul', sectionRepo);
+const sectionContributors = document.querySelector('.contributors-container');
+const ulCont = createAndAppend('ul', sectionContributors, {
+  class: 'ulCont',
+});
+const select = document.getElementById('select');
+
+
+async function fetchJSON(url) {
   try {
     const res = await axios.get(url);
     const data = res.data;
-    console.log(data);
-    cb(null, data);
+    if (res.status > 299) {
+      throw Error('Failed to fetch!');
+    }
+    return data;
   } catch (error) {
-    console.log(error);
-    cb(error, null);
+    throw error;
   }
+}
+
+async function main(url) {
+  try {
+    const res = await fetchJSON(url);
+    createSelection(res);
+
+  } catch (error) {
+    errorHandler(error);
+  }
+}
+
+function errorHandler(err) {
+  createAndAppend("div", root, {
+    text: err.message,
+    class: "alert-error"
+  });
 }
 
 //function to create elements and append them to desired sections
@@ -26,9 +52,6 @@ function createAndAppend(name, parent, options = {}) {
   });
   return elem;
 }
-
-const sectionRepo = document.querySelector('.repo-container'); //access to the repo section
-const ulRepo = createAndAppend('ul', sectionRepo);
 
 //rendering the repo data to show repo section
 function renderRepoDetails(repo, ul) {
@@ -58,25 +81,15 @@ function renderRepoDetails(repo, ul) {
   });
 }
 
-const sectionContributors = document.querySelector('.contributors-container'); //access to the contributors section
-const ulCont = createAndAppend('ul', sectionContributors, {
-  class: 'ulCont',
-});
-
 //rendering the contributors data
-function renderRepoContributors(repo) {
-  const contUrl = repo.contributors_url;
-  fetchJSON(contUrl, (err, contributors) => {
-    if (err) {
-      //appending the error to the page, if there is any
-      createAndAppend('div', root, {
-        text: err.message,
-        class: 'alert-error',
-      });
-      return;
-    }
-    createContributorSection(contributors); //if there is no error fire this function
-  });
+async function renderRepoContributors(repo) {
+  try {
+    const contUrl = repo.contributors_url;
+    const contributors = await fetchJSON(contUrl);
+    createContributorSection(contributors);
+  } catch (error) {
+    errorHandler(error);
+  }
 }
 
 //create the contributors section
@@ -111,7 +124,6 @@ function convertTime(time) {
   return dateTime.toLocaleString();
 }
 
-const select = document.getElementById('select'); //get access to select element
 // adding repo names to the select element as options
 // and rendering the repo and contributors sections
 function createSelection(repos) {
@@ -129,25 +141,12 @@ function createSelection(repos) {
     renderRepoDetails(repos[select.value], ulRepo);
     renderRepoContributors(repos[select.value], ulCont);
   });
-  renderRepoDetails(repos[0], ulRepo); //rendering the first repo as default
-  renderRepoContributors(repos[0], ulCont); //rendering first repo's contributors as default
+  renderRepoDetails(repos[select.value], ulRepo);
+  renderRepoContributors(repos[select.value], ulCont);
 }
 
-const mainContainer = document.querySelector('.main-container'); //get access to the main container
-//main function with provided callback function
-function main(url) {
-  fetchJSON(url, (err, repos) => {
-    if (err) {
-      //appending the error to the page, if there is any
-      createAndAppend('div', root, {
-        text: err.message,
-        class: 'alert-error',
-      });
-      return;
-    }
-    createSelection(repos); //if there is no error fire this function
-  });
-}
+// const mainContainer = document.querySelector('.main-container'); //get access to the main container
+
 const HYF_REPOS_URL =
   'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 window.onload = () => main(HYF_REPOS_URL); //attaching the main function to onload event listener
