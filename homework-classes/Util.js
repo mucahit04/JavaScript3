@@ -21,6 +21,10 @@
       });
       return elem;
     }
+    static convertTime(time) {
+      const dateTime = new Date(time);
+      return dateTime.toLocaleString();
+    }
   }
 
   window.Util = Util;
