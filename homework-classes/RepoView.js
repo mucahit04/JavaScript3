@@ -5,6 +5,10 @@
     createAndAppend
   } = window.Util;
 
+  const {
+    convertTime
+  } = window.Util;
+
   class RepoView {
     constructor(container) {
       this.container = container;
@@ -21,12 +25,6 @@
      * @param {Object} repo A repository object.
      */
     render(repo) {
-      // TODO: replace this comment and the console.log with your own code
-      // to make time more 'readible'
-      function convertTime(time) {
-        const dateTime = new Date(time);
-        return dateTime.toLocaleString();
-      }
       this.container.innerHTML = '';
       const ul = createAndAppend('ul', this.container);
       //creating li item for repository name
@@ -52,7 +50,6 @@
       createAndAppend('li', ul, {
         text: 'Updated: ' + convertTime(repo.updated_at),
       });
-      console.log('RepoView', repo);
     }
   }
 
