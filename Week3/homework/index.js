@@ -12,10 +12,10 @@ const select = document.getElementById('select');
 async function fetchJSON(url) {
   try {
     const res = await axios.get(url);
-    const data = res.data;
-    if (res.status > 299) {
-      throw Error('Failed to fetch!');
+    if (!res.ok || res.status > 299) {
+      throw new Error;
     }
+    const data = res.data;
     return data;
   } catch (error) {
     throw error;
@@ -34,7 +34,7 @@ async function main(url) {
 
 function errorHandler(err) {
   createAndAppend("div", root, {
-    text: err.message,
+    text: err.message || "Failed to fetch!",
     class: "alert-error"
   });
 }
